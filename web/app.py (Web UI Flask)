@@ -1,0 +1,61 @@
+from flask import Flask, render_template_string
+from src.api import get_price
+from src.portfolio import load_portfolio
+
+app = Flask(__name__)
+
+HTML_TEMPLATE = """
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Crypto Portfolio Tracker</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #2c3e50; }
+        table { border-collapse: collapse; width: 70%; }
+        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+        th { background: #f4f4f4; }
+    </style>
+</head>
+<body>
+    <h1>💼 Crypto Portfolio Tracker</h1>
+    <table>
+        <tr>
+            <th>Coin</th>
+            <th>Amount</th>
+            <th>Price (USD)</th>
+            <th>Value (USD)</th>
+        </tr>
+        {% for row in data %}
+        <tr>
+            <td>{{ row.symbol }}</td>
+            <td>{{ row.amount }}</td>
+            <td>${{ "{:,.2f}".format(row.price) }}</td>
+            <td>${{ "{:,.2f}".format(row.value) }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <h2>Total: ${{ "{:,.2f}".format(total) }}</h2>
+</body>
+</html>
+"""
+
+@app.route("/")
+def index():
+    portfolio = load_portfolio()
+    data = []
+    total_value = 0
+    for asset in portfolio:
+        price = get_price(asset["symbol"])
+        value = price * asset["amount"]
+        total_value += value
+        data.append({
+            "symbol": asset["symbol"].capitalize(),
+            "amount": asset["amount"],
+            "price": price,
+            "value": value
+        })
+    return render_template_string(HTML_TEMPLATE, data=data, total=total_value)
+
+if __name__ == "__main__":
+    app.run(debug=True)
