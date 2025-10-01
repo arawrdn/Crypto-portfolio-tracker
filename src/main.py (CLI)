@@ -1,0 +1,21 @@
+from api import get_price
+from portfolio import load_portfolio
+
+def main():
+    portfolio = load_portfolio()
+    total_value = 0
+
+    print("💼 Your Crypto Portfolio\n")
+
+    for asset in portfolio:
+        symbol = asset["symbol"]
+        amount = asset["amount"]
+        price = get_price(symbol)
+        value = price * amount
+        total_value += value
+        print(f"{symbol.capitalize()} ({amount}) → ${value:,.2f} (price: ${price:,.2f})")
+
+    print(f"\n💰 Total Portfolio Value: ${total_value:,.2f}")
+
+if __name__ == "__main__":
+    main()
