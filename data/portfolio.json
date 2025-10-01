@@ -1,0 +1,7 @@
+{
+  "portfolio": [
+    { "symbol": "bitcoin", "amount": 0.05 },
+    { "symbol": "ethereum", "amount": 1.2 },
+    { "symbol": "solana", "amount": 15 }
+  ]
+}
